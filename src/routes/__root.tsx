@@ -72,19 +72,71 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "README Generator — Create Stunning GitHub READMEs in Seconds" },
+      {
+        name: "description",
+        content:
+          "Free online README generator with live markdown preview. Build professional GitHub README files with badges, tech stack, features, installation, and license sections in seconds.",
+      },
+      {
+        name: "keywords",
+        content:
+          "readme generator, github readme, markdown generator, readme.md, readme maker, github profile readme, shields.io badges, open source readme",
+      },
+      { name: "author", content: "README Generator" },
+      { name: "robots", content: "index, follow" },
+      { name: "theme-color", content: "#0f172a" },
+
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
+      { property: "og:site_name", content: "README Generator" },
+      { property: "og:title", content: "README Generator — Create Stunning GitHub READMEs in Seconds" },
+      {
+        property: "og:description",
+        content:
+          "Build beautiful GitHub README files with a live markdown preview. Badges, tech stack, features, installation — all in one place.",
+      },
+      { property: "og:url", content: "/" },
+      { property: "og:locale", content: "en_US" },
+
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "README Generator — Create Stunning GitHub READMEs in Seconds" },
+      {
+        name: "twitter:description",
+        content:
+          "Build beautiful GitHub README files with a live markdown preview. Badges, tech stack, features, installation — all in one place.",
+      },
     ],
     links: [
+      { rel: "stylesheet", href: appCss },
+      { rel: "canonical", href: "/" },
+    ],
+    scripts: [
       {
-        rel: "stylesheet",
-        href: appCss,
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebApplication",
+          name: "README Generator",
+          description:
+            "Free online README generator with live markdown preview. Build professional GitHub README files with badges, tech stack, features, installation, and license sections in seconds.",
+          applicationCategory: "DeveloperApplication",
+          operatingSystem: "Any",
+          browserRequirements: "Requires JavaScript. Requires HTML5.",
+          offers: {
+            "@type": "Offer",
+            price: "0",
+            priceCurrency: "USD",
+          },
+          featureList: [
+            "Live markdown preview",
+            "Shields.io badges",
+            "Tech stack tag input",
+            "Dynamic feature list",
+            "License selector",
+            "Copy to clipboard",
+            "Download as README.md",
+          ],
+        }),
       },
     ],
   }),
