@@ -13,8 +13,68 @@ export const Route = createFileRoute("/")({
   component: Index,
   head: () => ({
     meta: [
-      { title: "README Generator — Create stunning GitHub READMEs in seconds" },
-      { name: "description", content: "A beautiful README generator with live markdown preview. Build professional GitHub READMEs with badges, tech stack, and more." },
+      { title: "README Generator — Create Stunning GitHub READMEs in Seconds" },
+      {
+        name: "description",
+        content:
+          "Free online README generator with live markdown preview. Build professional GitHub README.md files with badges, tech stack, features, and license in seconds.",
+      },
+      { property: "og:title", content: "README Generator — Create Stunning GitHub READMEs in Seconds" },
+      {
+        property: "og:description",
+        content:
+          "Build beautiful GitHub README files with a live markdown preview. Badges, tech stack, features, installation — all in one place.",
+      },
+      { property: "og:url", content: "/" },
+      { name: "twitter:title", content: "README Generator — Create Stunning GitHub READMEs in Seconds" },
+      {
+        name: "twitter:description",
+        content:
+          "Build beautiful GitHub README files with a live markdown preview. Badges, tech stack, features, installation — all in one place.",
+      },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: [
+            {
+              "@type": "Question",
+              name: "What is a README generator?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "A README generator is a tool that helps developers create professional README.md files for their GitHub repositories by filling out a simple form and previewing the markdown output in real time.",
+              },
+            },
+            {
+              "@type": "Question",
+              name: "Is this README generator free?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "Yes. README Generator is completely free to use. You can build, copy, and download as many README.md files as you want.",
+              },
+            },
+            {
+              "@type": "Question",
+              name: "Can I add shields.io badges?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "Yes. You can toggle popular badges such as MIT License, Made with Love, Open Source, and PRs Welcome, and they will render directly in your README.",
+              },
+            },
+            {
+              "@type": "Question",
+              name: "How do I download the README file?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "Fill out the form on the left, then click the Download button at the top of the live preview to save the file as README.md.",
+              },
+            },
+          ],
+        }),
+      },
     ],
   }),
 });
