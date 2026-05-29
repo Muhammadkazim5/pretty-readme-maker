@@ -11,7 +11,6 @@ import {
 import appCss from "../styles.css?url";
 
 function NotFoundComponent() {
-function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4 py-12">
       <div className="max-w-xl w-full text-center">
