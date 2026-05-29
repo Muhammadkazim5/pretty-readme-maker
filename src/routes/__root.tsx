@@ -11,26 +11,70 @@ import {
 import appCss from "../styles.css?url";
 
 function NotFoundComponent() {
+function NotFoundComponent() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-7xl font-bold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          The page you're looking for doesn't exist or has been moved.
+    <div className="flex min-h-screen items-center justify-center bg-background px-4 py-12">
+      <div className="max-w-xl w-full text-center">
+        <div className="inline-flex items-center justify-center rounded-full border border-border bg-card px-3 py-1 text-xs font-medium text-muted-foreground">
+          Error 404
+        </div>
+        <h1 className="mt-6 text-6xl font-bold tracking-tight text-foreground sm:text-7xl">
+          Page not found
+        </h1>
+        <p className="mt-4 text-base text-muted-foreground">
+          The page you're looking for doesn't exist. If you just deployed this
+          app to <strong className="text-foreground">Vercel</strong> and every
+          route returns 404, that's expected — this project is built for the
+          Cloudflare Workers runtime that Lovable's preview uses, and Vercel
+          can't execute the Worker bundle.
         </p>
-        <div className="mt-6">
+
+        <div className="mt-6 rounded-lg border border-border bg-card p-4 text-left text-sm text-muted-foreground">
+          <p className="font-semibold text-foreground">Fix the deploy</p>
+          <ul className="mt-2 space-y-1 list-disc list-inside">
+            <li>
+              Recommended: publish from Lovable — zero config, same runtime as
+              preview.
+            </li>
+            <li>
+              Or convert the project off Cloudflare (remove the Cloudflare
+              Vite plugin, <code>wrangler.jsonc</code>, and{" "}
+              <code>src/server.ts</code>; switch TanStack Start to a Node
+              target; add <code>vercel.json</code>). This breaks the Lovable
+              preview.
+            </li>
+          </ul>
+        </div>
+
+        <div className="mt-8 flex flex-wrap justify-center gap-3">
           <Link
             to="/"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            className="inline-flex items-center justify-center rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
             Go home
           </Link>
+          <a
+            href="https://docs.lovable.dev/features/deploy"
+            target="_blank"
+            rel="noreferrer noopener"
+            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-5 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+          >
+            Publishing docs
+          </a>
+          <a
+            href="https://docs.lovable.dev/features/cloud"
+            target="_blank"
+            rel="noreferrer noopener"
+            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-5 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+          >
+            Self-host guide
+          </a>
         </div>
       </div>
     </div>
   );
 }
+
 
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
