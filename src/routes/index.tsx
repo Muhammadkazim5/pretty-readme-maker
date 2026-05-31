@@ -70,6 +70,9 @@ const defaultState: ReadmeData = {
   },
   customBadges: [],
   toc: true,
+  roadmap: [],
+  faq: [],
+  acknowledgements: [],
 };
 
 function SectionHeader({ icon: Icon, title }: { icon: typeof FileText; title: string }) {
