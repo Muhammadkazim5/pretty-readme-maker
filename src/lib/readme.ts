@@ -1,6 +1,8 @@
 import { Toaster } from "@/components/ui/sonner";
 
 export type CustomBadge = { label: string; message: string; color: string };
+export type RoadmapItem = { text: string; done: boolean };
+export type FaqItem = { q: string; a: string };
 
 export type ReadmeData = {
   name: string;
@@ -28,6 +30,9 @@ export type ReadmeData = {
   };
   customBadges: CustomBadge[];
   toc: boolean;
+  roadmap: RoadmapItem[];
+  faq: FaqItem[];
+  acknowledgements: string[];
 };
 
 const slug = (s: string) =>
@@ -76,7 +81,10 @@ export function buildMarkdown(d: ReadmeData): string {
   if (d.features.filter(Boolean).length) sections.push("✨ Features");
   if (d.install) sections.push("📦 Installation");
   if (d.usage) sections.push("🚀 Usage");
+  if (d.roadmap?.filter((r) => r.text).length) sections.push("🗺️ Roadmap");
+  if (d.faq?.filter((f) => f.q).length) sections.push("❓ FAQ");
   if (d.contributing) sections.push("🤝 Contributing");
+  if (d.acknowledgements?.filter(Boolean).length) sections.push("🙏 Acknowledgements");
   if (d.license) sections.push("📄 License");
   if (d.author || d.github) sections.push("👤 Author");
 
@@ -100,6 +108,22 @@ export function buildMarkdown(d: ReadmeData): string {
   if (d.install) lines.push("## 📦 Installation", "", "```bash", d.install, "```", "");
   if (d.usage) lines.push("## 🚀 Usage", "", "```bash", d.usage, "```", "");
 
+  const roadmap = d.roadmap?.filter((r) => r.text) ?? [];
+  if (roadmap.length) {
+    lines.push("## 🗺️ Roadmap", "");
+    roadmap.forEach((r) => lines.push(`- [${r.done ? "x" : " "}] ${r.text}`));
+    lines.push("");
+  }
+
+  const faq = d.faq?.filter((f) => f.q) ?? [];
+  if (faq.length) {
+    lines.push("## ❓ FAQ", "");
+    faq.forEach((f) => {
+      lines.push(`**${f.q}**`, "");
+      if (f.a) lines.push(f.a, "");
+    });
+  }
+
   if (d.contributing) {
     lines.push(
       "## 🤝 Contributing",
@@ -114,6 +138,14 @@ export function buildMarkdown(d: ReadmeData): string {
       "",
     );
   }
+
+  const acks = d.acknowledgements?.filter(Boolean) ?? [];
+  if (acks.length) {
+    lines.push("## 🙏 Acknowledgements", "");
+    acks.forEach((a) => lines.push(`- ${a}`));
+    lines.push("");
+  }
+
   if (d.license) lines.push("## 📄 License", "", `Distributed under the ${d.license} License.`, "");
   if (d.author || d.github) {
     lines.push("## 👤 Author", "");

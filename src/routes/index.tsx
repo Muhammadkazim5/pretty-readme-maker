@@ -5,10 +5,11 @@ import { toast } from "sonner";
 import {
   FileText, Sparkles, Package, Play, Tag, ListChecks,
   Heart, Scale, User, Award, Copy, Download, X, Plus, Github,
-  Layers, Image as ImageIcon, ExternalLink, Sun, Moon, FileJson, BookOpen, Trash2
+  Layers, Image as ImageIcon, ExternalLink, Sun, Moon, FileJson, BookOpen, Trash2,
+  Map as MapIcon, HelpCircle, ThumbsUp
 } from "lucide-react";
 import { Toaster } from "@/components/ui/sonner";
-import { buildMarkdown, TEMPLATES, type ReadmeData, type CustomBadge } from "@/lib/readme";
+import { buildMarkdown, TEMPLATES, type ReadmeData, type CustomBadge, type RoadmapItem, type FaqItem } from "@/lib/readme";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -69,6 +70,9 @@ const defaultState: ReadmeData = {
   },
   customBadges: [],
   toc: true,
+  roadmap: [],
+  faq: [],
+  acknowledgements: [],
 };
 
 function SectionHeader({ icon: Icon, title }: { icon: typeof FileText; title: string }) {
@@ -398,6 +402,120 @@ function Index() {
               onChange={(e) => update("repo", e.target.value)}
             />
           </div>
+
+
+
+          {/* Roadmap */}
+          <div className="rounded-2xl bg-card border border-border p-5">
+            <SectionHeader icon={MapIcon} title="Roadmap" />
+            <div className="space-y-2">
+              {state.roadmap.map((r, i) => (
+                <div key={i} className="flex gap-2 items-center">
+                  <input
+                    type="checkbox"
+                    checked={r.done}
+                    onChange={(e) =>
+                      update("roadmap", state.roadmap.map((x, j) => (j === i ? { ...x, done: e.target.checked } : x)))
+                    }
+                    className="accent-[color:var(--primary)] w-4 h-4"
+                  />
+                  <input
+                    className={inputCls}
+                    placeholder="Roadmap item"
+                    value={r.text}
+                    onChange={(e) =>
+                      update("roadmap", state.roadmap.map((x, j) => (j === i ? { ...x, text: e.target.value } : x)))
+                    }
+                  />
+                  <button
+                    onClick={() => update("roadmap", state.roadmap.filter((_, j) => j !== i))}
+                    className="px-3 rounded-xl border border-border hover:border-destructive hover:text-destructive transition"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+              <button
+                onClick={() => update("roadmap", [...state.roadmap, { text: "", done: false } as RoadmapItem])}
+                className="inline-flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg border border-dashed border-border text-muted-foreground hover:border-primary hover:text-primary transition"
+              >
+                <Plus className="w-4 h-4" /> Add roadmap item
+              </button>
+            </div>
+          </div>
+
+          {/* FAQ */}
+          <div className="rounded-2xl bg-card border border-border p-5">
+            <SectionHeader icon={HelpCircle} title="FAQ" />
+            <div className="space-y-3">
+              {state.faq.map((f, i) => (
+                <div key={i} className="space-y-2 p-3 rounded-xl bg-[color:var(--surface-elevated)] border border-border">
+                  <div className="flex gap-2">
+                    <input
+                      className={inputCls}
+                      placeholder="Question"
+                      value={f.q}
+                      onChange={(e) =>
+                        update("faq", state.faq.map((x, j) => (j === i ? { ...x, q: e.target.value } : x)))
+                      }
+                    />
+                    <button
+                      onClick={() => update("faq", state.faq.filter((_, j) => j !== i))}
+                      className="px-3 rounded-xl border border-border hover:border-destructive hover:text-destructive transition"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <textarea
+                    className={inputCls + " min-h-16 resize-y"}
+                    placeholder="Answer"
+                    value={f.a}
+                    onChange={(e) =>
+                      update("faq", state.faq.map((x, j) => (j === i ? { ...x, a: e.target.value } : x)))
+                    }
+                  />
+                </div>
+              ))}
+              <button
+                onClick={() => update("faq", [...state.faq, { q: "", a: "" } as FaqItem])}
+                className="inline-flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg border border-dashed border-border text-muted-foreground hover:border-primary hover:text-primary transition"
+              >
+                <Plus className="w-4 h-4" /> Add Q&A
+              </button>
+            </div>
+          </div>
+
+          {/* Acknowledgements */}
+          <div className="rounded-2xl bg-card border border-border p-5">
+            <SectionHeader icon={ThumbsUp} title="Acknowledgements" />
+            <div className="space-y-2">
+              {state.acknowledgements.map((a, i) => (
+                <div key={i} className="flex gap-2">
+                  <input
+                    className={inputCls}
+                    placeholder="Person, library, or inspiration"
+                    value={a}
+                    onChange={(e) =>
+                      update("acknowledgements", state.acknowledgements.map((x, j) => (j === i ? e.target.value : x)))
+                    }
+                  />
+                  <button
+                    onClick={() => update("acknowledgements", state.acknowledgements.filter((_, j) => j !== i))}
+                    className="px-3 rounded-xl border border-border hover:border-destructive hover:text-destructive transition"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+              <button
+                onClick={() => update("acknowledgements", [...state.acknowledgements, ""])}
+                className="inline-flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg border border-dashed border-border text-muted-foreground hover:border-primary hover:text-primary transition"
+              >
+                <Plus className="w-4 h-4" /> Add acknowledgement
+              </button>
+            </div>
+          </div>
+
 
           <div className="rounded-2xl bg-card border border-border p-5">
             <SectionHeader icon={Award} title="Badges" />
