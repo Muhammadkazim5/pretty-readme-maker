@@ -394,7 +394,16 @@ function Index() {
             <div className="relative">
               <Github className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <input className={inputCls + " pl-10"} placeholder="https://github.com/username" value={state.github} onChange={(e) => update("github", e.target.value)} />
+            </div>
+            <input
+              className={inputCls}
+              placeholder="Repository (owner/name or full GitHub URL) — for GitHub badges"
+              value={state.repo}
+              onChange={(e) => update("repo", e.target.value)}
+            />
           </div>
+
+
 
           {/* Roadmap */}
           <div className="rounded-2xl bg-card border border-border p-5">
