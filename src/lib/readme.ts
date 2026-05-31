@@ -1,6 +1,8 @@
 import { Toaster } from "@/components/ui/sonner";
 
 export type CustomBadge = { label: string; message: string; color: string };
+export type RoadmapItem = { text: string; done: boolean };
+export type FaqItem = { q: string; a: string };
 
 export type ReadmeData = {
   name: string;
