@@ -108,6 +108,22 @@ export function buildMarkdown(d: ReadmeData): string {
   if (d.install) lines.push("## 📦 Installation", "", "```bash", d.install, "```", "");
   if (d.usage) lines.push("## 🚀 Usage", "", "```bash", d.usage, "```", "");
 
+  const roadmap = d.roadmap?.filter((r) => r.text) ?? [];
+  if (roadmap.length) {
+    lines.push("## 🗺️ Roadmap", "");
+    roadmap.forEach((r) => lines.push(`- [${r.done ? "x" : " "}] ${r.text}`));
+    lines.push("");
+  }
+
+  const faq = d.faq?.filter((f) => f.q) ?? [];
+  if (faq.length) {
+    lines.push("## ❓ FAQ", "");
+    faq.forEach((f) => {
+      lines.push(`**${f.q}**`, "");
+      if (f.a) lines.push(f.a, "");
+    });
+  }
+
   if (d.contributing) {
     lines.push(
       "## 🤝 Contributing",
