@@ -138,6 +138,14 @@ export function buildMarkdown(d: ReadmeData): string {
       "",
     );
   }
+
+  const acks = d.acknowledgements?.filter(Boolean) ?? [];
+  if (acks.length) {
+    lines.push("## 🙏 Acknowledgements", "");
+    acks.forEach((a) => lines.push(`- ${a}`));
+    lines.push("");
+  }
+
   if (d.license) lines.push("## 📄 License", "", `Distributed under the ${d.license} License.`, "");
   if (d.author || d.github) {
     lines.push("## 👤 Author", "");
