@@ -81,7 +81,10 @@ export function buildMarkdown(d: ReadmeData): string {
   if (d.features.filter(Boolean).length) sections.push("✨ Features");
   if (d.install) sections.push("📦 Installation");
   if (d.usage) sections.push("🚀 Usage");
+  if (d.roadmap?.filter((r) => r.text).length) sections.push("🗺️ Roadmap");
+  if (d.faq?.filter((f) => f.q).length) sections.push("❓ FAQ");
   if (d.contributing) sections.push("🤝 Contributing");
+  if (d.acknowledgements?.filter(Boolean).length) sections.push("🙏 Acknowledgements");
   if (d.license) sections.push("📄 License");
   if (d.author || d.github) sections.push("👤 Author");
 
