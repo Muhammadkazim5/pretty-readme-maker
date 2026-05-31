@@ -30,6 +30,9 @@ export type ReadmeData = {
   };
   customBadges: CustomBadge[];
   toc: boolean;
+  roadmap: RoadmapItem[];
+  faq: FaqItem[];
+  acknowledgements: string[];
 };
 
 const slug = (s: string) =>
