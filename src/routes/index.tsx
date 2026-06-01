@@ -84,6 +84,38 @@ function SectionHeader({ icon: Icon, title }: { icon: typeof FileText; title: st
   );
 }
 
+function Section({
+  icon: Icon, title, badge, children, defaultOpen = true, className = "",
+}: {
+  icon: typeof FileText; title: string; badge?: ReactNode; children: ReactNode;
+  defaultOpen?: boolean; className?: string;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className={`rounded-2xl bg-card border border-border overflow-hidden transition hover:border-primary/40 ${className}`}>
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="w-full flex items-center justify-between gap-3 px-5 py-4 text-left"
+      >
+        <div className="flex items-center gap-2">
+          <Icon className="w-4 h-4 text-[color:var(--accent-glow)]" />
+          <span className="text-sm font-semibold tracking-wide uppercase text-foreground/90">{title}</span>
+          {badge}
+        </div>
+        <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
+      </button>
+      <div
+        className={`grid transition-all duration-300 ease-out ${open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}
+      >
+        <div className="overflow-hidden">
+          <div className="px-5 pb-5 pt-0">{children}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 const inputCls =
   "w-full rounded-xl bg-[color:var(--surface-elevated)] border border-border px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/60 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/30";
 const codeInputCls = inputCls + " font-mono";
