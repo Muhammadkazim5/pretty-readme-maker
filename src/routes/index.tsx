@@ -1,12 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState, type KeyboardEvent } from "react";
+import { useEffect, useMemo, useState, type KeyboardEvent, type ReactNode } from "react";
 import { marked } from "marked";
 import { toast } from "sonner";
 import {
   FileText, Sparkles, Package, Play, Tag, ListChecks,
   Heart, Scale, User, Award, Copy, Download, X, Plus, Github,
   Layers, Image as ImageIcon, ExternalLink, Sun, Moon, FileJson, BookOpen, Trash2,
-  Map as MapIcon, HelpCircle, ThumbsUp
+  Map as MapIcon, HelpCircle, ThumbsUp, ChevronDown, Eye, Code2
 } from "lucide-react";
 import { Toaster } from "@/components/ui/sonner";
 import { buildMarkdown, TEMPLATES, type ReadmeData, type CustomBadge, type RoadmapItem, type FaqItem } from "@/lib/readme";
@@ -84,6 +84,38 @@ function SectionHeader({ icon: Icon, title }: { icon: typeof FileText; title: st
   );
 }
 
+function Section({
+  icon: Icon, title, badge, children, defaultOpen = true, className = "",
+}: {
+  icon: typeof FileText; title: string; badge?: ReactNode; children: ReactNode;
+  defaultOpen?: boolean; className?: string;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className={`rounded-2xl bg-card border border-border overflow-hidden transition hover:border-primary/40 ${className}`}>
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="w-full flex items-center justify-between gap-3 px-5 py-4 text-left"
+      >
+        <div className="flex items-center gap-2">
+          <Icon className="w-4 h-4 text-[color:var(--accent-glow)]" />
+          <span className="text-sm font-semibold tracking-wide uppercase text-foreground/90">{title}</span>
+          {badge}
+        </div>
+        <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
+      </button>
+      <div
+        className={`grid transition-all duration-300 ease-out ${open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}
+      >
+        <div className="overflow-hidden">
+          <div className="px-5 pb-5 pt-0">{children}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 const inputCls =
   "w-full rounded-xl bg-[color:var(--surface-elevated)] border border-border px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/60 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/30";
 const codeInputCls = inputCls + " font-mono";
@@ -92,6 +124,7 @@ function Index() {
   const [state, setState] = useState<ReadmeData>(defaultState);
   const [techInput, setTechInput] = useState("");
   const [previewTheme, setPreviewTheme] = useState<"dark" | "light">("dark");
+  const [previewMode, setPreviewMode] = useState<"rendered" | "raw">("rendered");
   const [pkgJsonInput, setPkgJsonInput] = useState("");
   const [showPkgImport, setShowPkgImport] = useState(false);
 
@@ -220,8 +253,7 @@ function Index() {
         {/* LEFT: FORM */}
         <section className="space-y-6">
           {/* Templates */}
-          <div className="rounded-2xl bg-card border border-border p-5">
-            <SectionHeader icon={Layers} title="Templates" />
+          <Section icon={Layers} title="Templates">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {TEMPLATE_LIST.map((t) => (
                 <button
@@ -234,7 +266,7 @@ function Index() {
                 </button>
               ))}
             </div>
-          </div>
+          </Section>
 
           {showPkgImport && (
             <div className="rounded-2xl bg-card border border-primary/50 p-5">
@@ -255,9 +287,8 @@ function Index() {
             </div>
           )}
 
-          <div className="rounded-2xl bg-card border border-border p-5">
-            <SectionHeader icon={Sparkles} title="Project" />
-            <input className={inputCls} placeholder="Project Name" value={state.name} onChange={(e) => update("name", e.target.value)} />
+          <Section icon={Sparkles} title="Project">
+            <input className={inputCls} placeholder="Project Name" value={state.name} onChange={(e) => update("name", e.target.value)} suppressHydrationWarning />
             <div className="mt-3 relative">
               <textarea
                 className={inputCls + " min-h-24 resize-y"}
@@ -270,30 +301,33 @@ function Index() {
                 {state.description.length}/300
               </div>
             </div>
-          </div>
+          </Section>
 
-          {/* Screenshots & Demo */}
-          <div className="rounded-2xl bg-card border border-border p-5 space-y-3">
-            <SectionHeader icon={ImageIcon} title="Screenshot & Demo" />
-            <input
-              className={inputCls}
-              placeholder="Screenshot image URL (https://...)"
-              value={state.screenshotUrl}
-              onChange={(e) => update("screenshotUrl", e.target.value)}
-            />
-            <div className="relative">
-              <ExternalLink className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Section icon={ImageIcon} title="Screenshot & Demo" defaultOpen={false}>
+            <div className="space-y-3">
               <input
-                className={inputCls + " pl-10"}
-                placeholder="Live demo URL"
-                value={state.demoUrl}
-                onChange={(e) => update("demoUrl", e.target.value)}
+                className={inputCls}
+                placeholder="Screenshot image URL (https://...)"
+                value={state.screenshotUrl}
+                onChange={(e) => update("screenshotUrl", e.target.value)}
               />
+              <div className="relative">
+                <ExternalLink className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <input
+                  className={inputCls + " pl-10"}
+                  placeholder="Live demo URL"
+                  value={state.demoUrl}
+                  onChange={(e) => update("demoUrl", e.target.value)}
+                />
+              </div>
             </div>
-          </div>
+          </Section>
 
-          <div className="rounded-2xl bg-card border border-border p-5">
-            <SectionHeader icon={Tag} title="Tech Stack" />
+          <Section
+            icon={Tag}
+            title="Tech Stack"
+            badge={state.tech.length ? <span className="ml-1 text-[10px] px-1.5 py-0.5 rounded-full bg-primary/20 text-primary-foreground border border-primary/40">{state.tech.length}</span> : null}
+          >
             <div className="flex flex-wrap gap-2 p-2 rounded-xl bg-[color:var(--surface-elevated)] border border-border focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/30 transition">
               {state.tech.map((t) => (
                 <span key={t} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-primary/20 text-primary-foreground text-xs font-medium border border-primary/40">
@@ -311,10 +345,13 @@ function Index() {
                 onKeyDown={addTech}
               />
             </div>
-          </div>
+          </Section>
 
-          <div className="rounded-2xl bg-card border border-border p-5">
-            <SectionHeader icon={ListChecks} title="Features" />
+          <Section
+            icon={ListChecks}
+            title="Features"
+            badge={state.features.filter(Boolean).length ? <span className="ml-1 text-[10px] px-1.5 py-0.5 rounded-full bg-primary/20 text-primary-foreground border border-primary/40">{state.features.filter(Boolean).length}</span> : null}
+          >
             <div className="space-y-2">
               {state.features.map((f, i) => (
                 <div key={i} className="flex gap-2">
@@ -340,75 +377,86 @@ function Index() {
                 <Plus className="w-4 h-4" /> Add feature
               </button>
             </div>
-          </div>
+          </Section>
 
-          <div className="rounded-2xl bg-card border border-border p-5 space-y-4">
-            <div>
-              <SectionHeader icon={Package} title="Installation" />
-              <input className={codeInputCls} placeholder="npm install your-package" value={state.install} onChange={(e) => update("install", e.target.value)} />
-            </div>
-            <div>
-              <SectionHeader icon={Play} title="Usage / Run" />
-              <input className={codeInputCls} placeholder="npm run dev" value={state.usage} onChange={(e) => update("usage", e.target.value)} />
-            </div>
-          </div>
-
-          <div className="rounded-2xl bg-card border border-border p-5 space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <BookOpen className="w-4 h-4 text-[color:var(--accent-glow)]" />
-                <span className="text-sm font-semibold uppercase tracking-wide">Table of Contents</span>
+          <Section icon={Package} title="Installation & Usage">
+            <div className="space-y-4">
+              <div>
+                <SectionHeader icon={Package} title="Installation" />
+                <input className={codeInputCls} placeholder="npm install your-package" value={state.install} onChange={(e) => update("install", e.target.value)} />
               </div>
-              <button
-                onClick={() => update("toc", !state.toc)}
-                className={`relative w-12 h-6 rounded-full transition ${state.toc ? "bg-primary" : "bg-border"}`}
-              >
-                <span className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform ${state.toc ? "translate-x-6" : ""}`} />
-              </button>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Heart className="w-4 h-4 text-[color:var(--accent-glow)]" />
-                <span className="text-sm font-semibold uppercase tracking-wide">Contributing Section</span>
+              <div>
+                <SectionHeader icon={Play} title="Usage / Run" />
+                <input className={codeInputCls} placeholder="npm run dev" value={state.usage} onChange={(e) => update("usage", e.target.value)} />
               </div>
-              <button
-                onClick={() => update("contributing", !state.contributing)}
-                className={`relative w-12 h-6 rounded-full transition ${state.contributing ? "bg-primary" : "bg-border"}`}
-              >
-                <span className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform ${state.contributing ? "translate-x-6" : ""}`} />
-              </button>
             </div>
+          </Section>
 
-            <div>
-              <SectionHeader icon={Scale} title="License" />
-              <select className={inputCls} value={state.license} onChange={(e) => update("license", e.target.value)}>
-                {LICENSES.map((l) => <option key={l} value={l}>{l}</option>)}
-              </select>
+          <Section icon={Scale} title="Options & License">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <BookOpen className="w-4 h-4 text-[color:var(--accent-glow)]" />
+                  <span className="text-sm font-semibold uppercase tracking-wide">Table of Contents</span>
+                </div>
+                <button
+                  onClick={() => update("toc", !state.toc)}
+                  className={`relative w-12 h-6 rounded-full transition ${state.toc ? "bg-primary" : "bg-border"}`}
+                >
+                  <span className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform ${state.toc ? "translate-x-6" : ""}`} />
+                </button>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Heart className="w-4 h-4 text-[color:var(--accent-glow)]" />
+                  <span className="text-sm font-semibold uppercase tracking-wide">Contributing Section</span>
+                </div>
+                <button
+                  onClick={() => update("contributing", !state.contributing)}
+                  className={`relative w-12 h-6 rounded-full transition ${state.contributing ? "bg-primary" : "bg-border"}`}
+                >
+                  <span className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform ${state.contributing ? "translate-x-6" : ""}`} />
+                </button>
+              </div>
+
+              <div>
+                <SectionHeader icon={Scale} title="License" />
+                <select className={inputCls} value={state.license} onChange={(e) => update("license", e.target.value)}>
+                  {LICENSES.map((l) => <option key={l} value={l}>{l}</option>)}
+                </select>
+              </div>
             </div>
-          </div>
+          </Section>
 
-          <div className="rounded-2xl bg-card border border-border p-5 space-y-3">
-            <SectionHeader icon={User} title="Author" />
-            <input className={inputCls} placeholder="Author name" value={state.author} onChange={(e) => update("author", e.target.value)} />
-            <div className="relative">
-              <Github className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <input className={inputCls + " pl-10"} placeholder="https://github.com/username" value={state.github} onChange={(e) => update("github", e.target.value)} />
+          <Section icon={User} title="Author" defaultOpen={false}>
+            <div className="space-y-3">
+              <input className={inputCls} placeholder="Author name" value={state.author} onChange={(e) => update("author", e.target.value)} />
+              <div className="relative">
+                <Github className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <input className={inputCls + " pl-10"} placeholder="https://github.com/username" value={state.github} onChange={(e) => update("github", e.target.value)} />
+              </div>
+              <input
+                className={inputCls}
+                placeholder="Repository (owner/name or full GitHub URL) — for GitHub badges"
+                value={state.repo}
+                onChange={(e) => update("repo", e.target.value)}
+              />
             </div>
-            <input
-              className={inputCls}
-              placeholder="Repository (owner/name or full GitHub URL) — for GitHub badges"
-              value={state.repo}
-              onChange={(e) => update("repo", e.target.value)}
-            />
-          </div>
+          </Section>
 
 
 
-          {/* Roadmap */}
-          <div className="rounded-2xl bg-card border border-border p-5">
-            <SectionHeader icon={MapIcon} title="Roadmap" />
+          <Section
+            icon={MapIcon}
+            title="Roadmap"
+            defaultOpen={false}
+            badge={state.roadmap.length ? <span className="ml-1 text-[10px] px-1.5 py-0.5 rounded-full bg-primary/20 text-primary-foreground border border-primary/40">{state.roadmap.length}</span> : null}
+          >
             <div className="space-y-2">
+              {state.roadmap.length === 0 && (
+                <div className="text-xs text-muted-foreground italic px-1 py-2">No roadmap items yet — share what's coming next.</div>
+              )}
               {state.roadmap.map((r, i) => (
                 <div key={i} className="flex gap-2 items-center">
                   <input
@@ -442,12 +490,18 @@ function Index() {
                 <Plus className="w-4 h-4" /> Add roadmap item
               </button>
             </div>
-          </div>
+          </Section>
 
-          {/* FAQ */}
-          <div className="rounded-2xl bg-card border border-border p-5">
-            <SectionHeader icon={HelpCircle} title="FAQ" />
+          <Section
+            icon={HelpCircle}
+            title="FAQ"
+            defaultOpen={false}
+            badge={state.faq.length ? <span className="ml-1 text-[10px] px-1.5 py-0.5 rounded-full bg-primary/20 text-primary-foreground border border-primary/40">{state.faq.length}</span> : null}
+          >
             <div className="space-y-3">
+              {state.faq.length === 0 && (
+                <div className="text-xs text-muted-foreground italic px-1 py-2">Answer common questions to save your users time.</div>
+              )}
               {state.faq.map((f, i) => (
                 <div key={i} className="space-y-2 p-3 rounded-xl bg-[color:var(--surface-elevated)] border border-border">
                   <div className="flex gap-2">
@@ -483,12 +537,18 @@ function Index() {
                 <Plus className="w-4 h-4" /> Add Q&A
               </button>
             </div>
-          </div>
+          </Section>
 
-          {/* Acknowledgements */}
-          <div className="rounded-2xl bg-card border border-border p-5">
-            <SectionHeader icon={ThumbsUp} title="Acknowledgements" />
+          <Section
+            icon={ThumbsUp}
+            title="Acknowledgements"
+            defaultOpen={false}
+            badge={state.acknowledgements.length ? <span className="ml-1 text-[10px] px-1.5 py-0.5 rounded-full bg-primary/20 text-primary-foreground border border-primary/40">{state.acknowledgements.length}</span> : null}
+          >
             <div className="space-y-2">
+              {state.acknowledgements.length === 0 && (
+                <div className="text-xs text-muted-foreground italic px-1 py-2">Credit people, libraries, or inspirations.</div>
+              )}
               {state.acknowledgements.map((a, i) => (
                 <div key={i} className="flex gap-2">
                   <input
@@ -514,11 +574,9 @@ function Index() {
                 <Plus className="w-4 h-4" /> Add acknowledgement
               </button>
             </div>
-          </div>
+          </Section>
 
-
-          <div className="rounded-2xl bg-card border border-border p-5">
-            <SectionHeader icon={Award} title="Badges" />
+          <Section icon={Award} title="Badges" defaultOpen={false}>
             <div className="grid grid-cols-2 gap-2">
               {([
                 ["madeWithLove", "Made with Love"],
@@ -564,26 +622,44 @@ function Index() {
                 <Plus className="w-4 h-4" /> Add custom badge
               </button>
             </div>
-          </div>
+          </Section>
         </section>
 
         {/* RIGHT: PREVIEW */}
         <section className="lg:sticky lg:top-6 lg:self-start lg:max-h-[calc(100vh-3rem)]">
           <div className="rounded-2xl bg-card border border-border overflow-hidden flex flex-col lg:max-h-[calc(100vh-3rem)]">
-            <div className="flex items-center justify-between px-5 py-3 border-b border-border bg-[color:var(--surface-elevated)] sticky top-0 z-10">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Live Preview</span>
+            <div className="flex items-center justify-between gap-3 px-5 py-3 border-b border-border bg-[color:var(--surface-elevated)] sticky top-0 z-10 flex-wrap">
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Live Preview</span>
+                </div>
+                <div className="inline-flex p-0.5 rounded-lg bg-[color:var(--surface)] border border-border">
+                  <button
+                    onClick={() => setPreviewMode("rendered")}
+                    className={`inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-md transition ${previewMode === "rendered" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                  >
+                    <Eye className="w-3 h-3" /> Rendered
+                  </button>
+                  <button
+                    onClick={() => setPreviewMode("raw")}
+                    className={`inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-md transition ${previewMode === "raw" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                  >
+                    <Code2 className="w-3 h-3" /> Raw
+                  </button>
+                </div>
               </div>
               <div className="flex gap-2">
-                <button
-                  onClick={() => setPreviewTheme((t) => (t === "dark" ? "light" : "dark"))}
-                  className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg bg-[color:var(--surface)] border border-border hover:border-primary hover:text-primary transition"
-                  title="Toggle GitHub light/dark preview"
-                >
-                  {previewTheme === "dark" ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
-                  {previewTheme === "dark" ? "Light" : "Dark"}
-                </button>
+                {previewMode === "rendered" && (
+                  <button
+                    onClick={() => setPreviewTheme((t) => (t === "dark" ? "light" : "dark"))}
+                    className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg bg-[color:var(--surface)] border border-border hover:border-primary hover:text-primary transition"
+                    title="Toggle GitHub light/dark preview"
+                  >
+                    {previewTheme === "dark" ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
+                    {previewTheme === "dark" ? "Light" : "Dark"}
+                  </button>
+                )}
                 <button
                   onClick={copy}
                   disabled={!md}
@@ -602,13 +678,17 @@ function Index() {
             </div>
 
             <div
-              className={`overflow-auto scrollbar-thin p-6 min-h-96 lg:min-h-0 ${previewTheme === "light" ? "preview-light" : ""}`}
+              className={`overflow-auto scrollbar-thin p-6 min-h-96 lg:min-h-0 ${previewMode === "rendered" && previewTheme === "light" ? "preview-light" : ""}`}
             >
               {md ? (
-                <article
-                  className="prose-readme transition-opacity duration-300"
-                  dangerouslySetInnerHTML={{ __html: html }}
-                />
+                previewMode === "rendered" ? (
+                  <article
+                    className="prose-readme transition-opacity duration-300"
+                    dangerouslySetInnerHTML={{ __html: html }}
+                  />
+                ) : (
+                  <pre className="text-xs font-mono leading-relaxed text-foreground/90 whitespace-pre-wrap break-words">{md}</pre>
+                )
               ) : (
                 <div className="h-full min-h-72 grid place-items-center text-center">
                   <div>
