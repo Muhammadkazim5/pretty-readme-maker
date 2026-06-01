@@ -1,12 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState, type KeyboardEvent } from "react";
+import { useEffect, useMemo, useState, type KeyboardEvent, type ReactNode } from "react";
 import { marked } from "marked";
 import { toast } from "sonner";
 import {
   FileText, Sparkles, Package, Play, Tag, ListChecks,
   Heart, Scale, User, Award, Copy, Download, X, Plus, Github,
   Layers, Image as ImageIcon, ExternalLink, Sun, Moon, FileJson, BookOpen, Trash2,
-  Map as MapIcon, HelpCircle, ThumbsUp
+  Map as MapIcon, HelpCircle, ThumbsUp, ChevronDown, Eye, Code2
 } from "lucide-react";
 import { Toaster } from "@/components/ui/sonner";
 import { buildMarkdown, TEMPLATES, type ReadmeData, type CustomBadge, type RoadmapItem, type FaqItem } from "@/lib/readme";
