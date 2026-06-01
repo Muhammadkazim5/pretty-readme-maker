@@ -447,10 +447,16 @@ function Index() {
 
 
 
-          {/* Roadmap */}
-          <div className="rounded-2xl bg-card border border-border p-5">
-            <SectionHeader icon={MapIcon} title="Roadmap" />
+          <Section
+            icon={MapIcon}
+            title="Roadmap"
+            defaultOpen={false}
+            badge={state.roadmap.length ? <span className="ml-1 text-[10px] px-1.5 py-0.5 rounded-full bg-primary/20 text-primary-foreground border border-primary/40">{state.roadmap.length}</span> : null}
+          >
             <div className="space-y-2">
+              {state.roadmap.length === 0 && (
+                <div className="text-xs text-muted-foreground italic px-1 py-2">No roadmap items yet — share what's coming next.</div>
+              )}
               {state.roadmap.map((r, i) => (
                 <div key={i} className="flex gap-2 items-center">
                   <input
@@ -484,12 +490,18 @@ function Index() {
                 <Plus className="w-4 h-4" /> Add roadmap item
               </button>
             </div>
-          </div>
+          </Section>
 
-          {/* FAQ */}
-          <div className="rounded-2xl bg-card border border-border p-5">
-            <SectionHeader icon={HelpCircle} title="FAQ" />
+          <Section
+            icon={HelpCircle}
+            title="FAQ"
+            defaultOpen={false}
+            badge={state.faq.length ? <span className="ml-1 text-[10px] px-1.5 py-0.5 rounded-full bg-primary/20 text-primary-foreground border border-primary/40">{state.faq.length}</span> : null}
+          >
             <div className="space-y-3">
+              {state.faq.length === 0 && (
+                <div className="text-xs text-muted-foreground italic px-1 py-2">Answer common questions to save your users time.</div>
+              )}
               {state.faq.map((f, i) => (
                 <div key={i} className="space-y-2 p-3 rounded-xl bg-[color:var(--surface-elevated)] border border-border">
                   <div className="flex gap-2">
@@ -525,12 +537,18 @@ function Index() {
                 <Plus className="w-4 h-4" /> Add Q&A
               </button>
             </div>
-          </div>
+          </Section>
 
-          {/* Acknowledgements */}
-          <div className="rounded-2xl bg-card border border-border p-5">
-            <SectionHeader icon={ThumbsUp} title="Acknowledgements" />
+          <Section
+            icon={ThumbsUp}
+            title="Acknowledgements"
+            defaultOpen={false}
+            badge={state.acknowledgements.length ? <span className="ml-1 text-[10px] px-1.5 py-0.5 rounded-full bg-primary/20 text-primary-foreground border border-primary/40">{state.acknowledgements.length}</span> : null}
+          >
             <div className="space-y-2">
+              {state.acknowledgements.length === 0 && (
+                <div className="text-xs text-muted-foreground italic px-1 py-2">Credit people, libraries, or inspirations.</div>
+              )}
               {state.acknowledgements.map((a, i) => (
                 <div key={i} className="flex gap-2">
                   <input
@@ -556,11 +574,9 @@ function Index() {
                 <Plus className="w-4 h-4" /> Add acknowledgement
               </button>
             </div>
-          </div>
+          </Section>
 
-
-          <div className="rounded-2xl bg-card border border-border p-5">
-            <SectionHeader icon={Award} title="Badges" />
+          <Section icon={Award} title="Badges" defaultOpen={false}>
             <div className="grid grid-cols-2 gap-2">
               {([
                 ["madeWithLove", "Made with Love"],
@@ -606,7 +622,7 @@ function Index() {
                 <Plus className="w-4 h-4" /> Add custom badge
               </button>
             </div>
-          </div>
+          </Section>
         </section>
 
         {/* RIGHT: PREVIEW */}
