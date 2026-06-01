@@ -124,6 +124,7 @@ function Index() {
   const [state, setState] = useState<ReadmeData>(defaultState);
   const [techInput, setTechInput] = useState("");
   const [previewTheme, setPreviewTheme] = useState<"dark" | "light">("dark");
+  const [previewMode, setPreviewMode] = useState<"rendered" | "raw">("rendered");
   const [pkgJsonInput, setPkgJsonInput] = useState("");
   const [showPkgImport, setShowPkgImport] = useState(false);
 
