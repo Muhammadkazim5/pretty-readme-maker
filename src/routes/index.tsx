@@ -253,8 +253,7 @@ function Index() {
         {/* LEFT: FORM */}
         <section className="space-y-6">
           {/* Templates */}
-          <div className="rounded-2xl bg-card border border-border p-5">
-            <SectionHeader icon={Layers} title="Templates" />
+          <Section icon={Layers} title="Templates">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {TEMPLATE_LIST.map((t) => (
                 <button
@@ -267,7 +266,7 @@ function Index() {
                 </button>
               ))}
             </div>
-          </div>
+          </Section>
 
           {showPkgImport && (
             <div className="rounded-2xl bg-card border border-primary/50 p-5">
