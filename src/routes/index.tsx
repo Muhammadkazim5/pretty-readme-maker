@@ -287,9 +287,8 @@ function Index() {
             </div>
           )}
 
-          <div className="rounded-2xl bg-card border border-border p-5">
-            <SectionHeader icon={Sparkles} title="Project" />
-            <input className={inputCls} placeholder="Project Name" value={state.name} onChange={(e) => update("name", e.target.value)} />
+          <Section icon={Sparkles} title="Project">
+            <input className={inputCls} placeholder="Project Name" value={state.name} onChange={(e) => update("name", e.target.value)} suppressHydrationWarning />
             <div className="mt-3 relative">
               <textarea
                 className={inputCls + " min-h-24 resize-y"}
@@ -302,30 +301,33 @@ function Index() {
                 {state.description.length}/300
               </div>
             </div>
-          </div>
+          </Section>
 
-          {/* Screenshots & Demo */}
-          <div className="rounded-2xl bg-card border border-border p-5 space-y-3">
-            <SectionHeader icon={ImageIcon} title="Screenshot & Demo" />
-            <input
-              className={inputCls}
-              placeholder="Screenshot image URL (https://...)"
-              value={state.screenshotUrl}
-              onChange={(e) => update("screenshotUrl", e.target.value)}
-            />
-            <div className="relative">
-              <ExternalLink className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Section icon={ImageIcon} title="Screenshot & Demo" defaultOpen={false}>
+            <div className="space-y-3">
               <input
-                className={inputCls + " pl-10"}
-                placeholder="Live demo URL"
-                value={state.demoUrl}
-                onChange={(e) => update("demoUrl", e.target.value)}
+                className={inputCls}
+                placeholder="Screenshot image URL (https://...)"
+                value={state.screenshotUrl}
+                onChange={(e) => update("screenshotUrl", e.target.value)}
               />
+              <div className="relative">
+                <ExternalLink className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <input
+                  className={inputCls + " pl-10"}
+                  placeholder="Live demo URL"
+                  value={state.demoUrl}
+                  onChange={(e) => update("demoUrl", e.target.value)}
+                />
+              </div>
             </div>
-          </div>
+          </Section>
 
-          <div className="rounded-2xl bg-card border border-border p-5">
-            <SectionHeader icon={Tag} title="Tech Stack" />
+          <Section
+            icon={Tag}
+            title="Tech Stack"
+            badge={state.tech.length ? <span className="ml-1 text-[10px] px-1.5 py-0.5 rounded-full bg-primary/20 text-primary-foreground border border-primary/40">{state.tech.length}</span> : null}
+          >
             <div className="flex flex-wrap gap-2 p-2 rounded-xl bg-[color:var(--surface-elevated)] border border-border focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/30 transition">
               {state.tech.map((t) => (
                 <span key={t} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-primary/20 text-primary-foreground text-xs font-medium border border-primary/40">
@@ -343,10 +345,13 @@ function Index() {
                 onKeyDown={addTech}
               />
             </div>
-          </div>
+          </Section>
 
-          <div className="rounded-2xl bg-card border border-border p-5">
-            <SectionHeader icon={ListChecks} title="Features" />
+          <Section
+            icon={ListChecks}
+            title="Features"
+            badge={state.features.filter(Boolean).length ? <span className="ml-1 text-[10px] px-1.5 py-0.5 rounded-full bg-primary/20 text-primary-foreground border border-primary/40">{state.features.filter(Boolean).length}</span> : null}
+          >
             <div className="space-y-2">
               {state.features.map((f, i) => (
                 <div key={i} className="flex gap-2">
@@ -372,68 +377,73 @@ function Index() {
                 <Plus className="w-4 h-4" /> Add feature
               </button>
             </div>
-          </div>
+          </Section>
 
-          <div className="rounded-2xl bg-card border border-border p-5 space-y-4">
-            <div>
-              <SectionHeader icon={Package} title="Installation" />
-              <input className={codeInputCls} placeholder="npm install your-package" value={state.install} onChange={(e) => update("install", e.target.value)} />
-            </div>
-            <div>
-              <SectionHeader icon={Play} title="Usage / Run" />
-              <input className={codeInputCls} placeholder="npm run dev" value={state.usage} onChange={(e) => update("usage", e.target.value)} />
-            </div>
-          </div>
-
-          <div className="rounded-2xl bg-card border border-border p-5 space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <BookOpen className="w-4 h-4 text-[color:var(--accent-glow)]" />
-                <span className="text-sm font-semibold uppercase tracking-wide">Table of Contents</span>
+          <Section icon={Package} title="Installation & Usage">
+            <div className="space-y-4">
+              <div>
+                <SectionHeader icon={Package} title="Installation" />
+                <input className={codeInputCls} placeholder="npm install your-package" value={state.install} onChange={(e) => update("install", e.target.value)} />
               </div>
-              <button
-                onClick={() => update("toc", !state.toc)}
-                className={`relative w-12 h-6 rounded-full transition ${state.toc ? "bg-primary" : "bg-border"}`}
-              >
-                <span className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform ${state.toc ? "translate-x-6" : ""}`} />
-              </button>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Heart className="w-4 h-4 text-[color:var(--accent-glow)]" />
-                <span className="text-sm font-semibold uppercase tracking-wide">Contributing Section</span>
+              <div>
+                <SectionHeader icon={Play} title="Usage / Run" />
+                <input className={codeInputCls} placeholder="npm run dev" value={state.usage} onChange={(e) => update("usage", e.target.value)} />
               </div>
-              <button
-                onClick={() => update("contributing", !state.contributing)}
-                className={`relative w-12 h-6 rounded-full transition ${state.contributing ? "bg-primary" : "bg-border"}`}
-              >
-                <span className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform ${state.contributing ? "translate-x-6" : ""}`} />
-              </button>
             </div>
+          </Section>
 
-            <div>
-              <SectionHeader icon={Scale} title="License" />
-              <select className={inputCls} value={state.license} onChange={(e) => update("license", e.target.value)}>
-                {LICENSES.map((l) => <option key={l} value={l}>{l}</option>)}
-              </select>
-            </div>
-          </div>
+          <Section icon={Scale} title="Options & License">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <BookOpen className="w-4 h-4 text-[color:var(--accent-glow)]" />
+                  <span className="text-sm font-semibold uppercase tracking-wide">Table of Contents</span>
+                </div>
+                <button
+                  onClick={() => update("toc", !state.toc)}
+                  className={`relative w-12 h-6 rounded-full transition ${state.toc ? "bg-primary" : "bg-border"}`}
+                >
+                  <span className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform ${state.toc ? "translate-x-6" : ""}`} />
+                </button>
+              </div>
 
-          <div className="rounded-2xl bg-card border border-border p-5 space-y-3">
-            <SectionHeader icon={User} title="Author" />
-            <input className={inputCls} placeholder="Author name" value={state.author} onChange={(e) => update("author", e.target.value)} />
-            <div className="relative">
-              <Github className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <input className={inputCls + " pl-10"} placeholder="https://github.com/username" value={state.github} onChange={(e) => update("github", e.target.value)} />
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Heart className="w-4 h-4 text-[color:var(--accent-glow)]" />
+                  <span className="text-sm font-semibold uppercase tracking-wide">Contributing Section</span>
+                </div>
+                <button
+                  onClick={() => update("contributing", !state.contributing)}
+                  className={`relative w-12 h-6 rounded-full transition ${state.contributing ? "bg-primary" : "bg-border"}`}
+                >
+                  <span className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform ${state.contributing ? "translate-x-6" : ""}`} />
+                </button>
+              </div>
+
+              <div>
+                <SectionHeader icon={Scale} title="License" />
+                <select className={inputCls} value={state.license} onChange={(e) => update("license", e.target.value)}>
+                  {LICENSES.map((l) => <option key={l} value={l}>{l}</option>)}
+                </select>
+              </div>
             </div>
-            <input
-              className={inputCls}
-              placeholder="Repository (owner/name or full GitHub URL) — for GitHub badges"
-              value={state.repo}
-              onChange={(e) => update("repo", e.target.value)}
-            />
-          </div>
+          </Section>
+
+          <Section icon={User} title="Author" defaultOpen={false}>
+            <div className="space-y-3">
+              <input className={inputCls} placeholder="Author name" value={state.author} onChange={(e) => update("author", e.target.value)} />
+              <div className="relative">
+                <Github className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <input className={inputCls + " pl-10"} placeholder="https://github.com/username" value={state.github} onChange={(e) => update("github", e.target.value)} />
+              </div>
+              <input
+                className={inputCls}
+                placeholder="Repository (owner/name or full GitHub URL) — for GitHub badges"
+                value={state.repo}
+                onChange={(e) => update("repo", e.target.value)}
+              />
+            </div>
+          </Section>
 
 
 
