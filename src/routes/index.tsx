@@ -628,20 +628,38 @@ function Index() {
         {/* RIGHT: PREVIEW */}
         <section className="lg:sticky lg:top-6 lg:self-start lg:max-h-[calc(100vh-3rem)]">
           <div className="rounded-2xl bg-card border border-border overflow-hidden flex flex-col lg:max-h-[calc(100vh-3rem)]">
-            <div className="flex items-center justify-between px-5 py-3 border-b border-border bg-[color:var(--surface-elevated)] sticky top-0 z-10">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Live Preview</span>
+            <div className="flex items-center justify-between gap-3 px-5 py-3 border-b border-border bg-[color:var(--surface-elevated)] sticky top-0 z-10 flex-wrap">
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Live Preview</span>
+                </div>
+                <div className="inline-flex p-0.5 rounded-lg bg-[color:var(--surface)] border border-border">
+                  <button
+                    onClick={() => setPreviewMode("rendered")}
+                    className={`inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-md transition ${previewMode === "rendered" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                  >
+                    <Eye className="w-3 h-3" /> Rendered
+                  </button>
+                  <button
+                    onClick={() => setPreviewMode("raw")}
+                    className={`inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-md transition ${previewMode === "raw" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                  >
+                    <Code2 className="w-3 h-3" /> Raw
+                  </button>
+                </div>
               </div>
               <div className="flex gap-2">
-                <button
-                  onClick={() => setPreviewTheme((t) => (t === "dark" ? "light" : "dark"))}
-                  className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg bg-[color:var(--surface)] border border-border hover:border-primary hover:text-primary transition"
-                  title="Toggle GitHub light/dark preview"
-                >
-                  {previewTheme === "dark" ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
-                  {previewTheme === "dark" ? "Light" : "Dark"}
-                </button>
+                {previewMode === "rendered" && (
+                  <button
+                    onClick={() => setPreviewTheme((t) => (t === "dark" ? "light" : "dark"))}
+                    className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg bg-[color:var(--surface)] border border-border hover:border-primary hover:text-primary transition"
+                    title="Toggle GitHub light/dark preview"
+                  >
+                    {previewTheme === "dark" ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
+                    {previewTheme === "dark" ? "Light" : "Dark"}
+                  </button>
+                )}
                 <button
                   onClick={copy}
                   disabled={!md}
@@ -660,13 +678,17 @@ function Index() {
             </div>
 
             <div
-              className={`overflow-auto scrollbar-thin p-6 min-h-96 lg:min-h-0 ${previewTheme === "light" ? "preview-light" : ""}`}
+              className={`overflow-auto scrollbar-thin p-6 min-h-96 lg:min-h-0 ${previewMode === "rendered" && previewTheme === "light" ? "preview-light" : ""}`}
             >
               {md ? (
-                <article
-                  className="prose-readme transition-opacity duration-300"
-                  dangerouslySetInnerHTML={{ __html: html }}
-                />
+                previewMode === "rendered" ? (
+                  <article
+                    className="prose-readme transition-opacity duration-300"
+                    dangerouslySetInnerHTML={{ __html: html }}
+                  />
+                ) : (
+                  <pre className="text-xs font-mono leading-relaxed text-foreground/90 whitespace-pre-wrap break-words">{md}</pre>
+                )
               ) : (
                 <div className="h-full min-h-72 grid place-items-center text-center">
                   <div>
