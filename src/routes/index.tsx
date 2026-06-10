@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState, type KeyboardEvent, type ReactNode } from "react";
+import { useEffect, useMemo, useState, useCallback, type KeyboardEvent, type ReactNode } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { marked } from "marked";
 import { toast } from "sonner";
 import {
