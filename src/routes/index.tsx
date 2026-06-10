@@ -128,12 +128,19 @@ function Index() {
   const [previewMode, setPreviewMode] = useState<"rendered" | "raw">("rendered");
   const [pkgJsonInput, setPkgJsonInput] = useState("");
   const [showPkgImport, setShowPkgImport] = useState(false);
+  const [featureKeys, setFeatureKeys] = useState<string[]>(() => defaultState.features.map(() => crypto.randomUUID()));
+  const [ackKeys, setAckKeys] = useState<string[]>(() => defaultState.acknowledgements.map(() => crypto.randomUUID()));
 
   // Load from localStorage
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) setState({ ...defaultState, ...JSON.parse(raw) });
+      if (raw) {
+        const parsed = { ...defaultState, ...JSON.parse(raw) } as ReadmeData;
+        setState(parsed);
+        setFeatureKeys(parsed.features.map(() => crypto.randomUUID()));
+        setAckKeys(parsed.acknowledgements.map(() => crypto.randomUUID()));
+      }
     } catch {}
   }, []);
 
