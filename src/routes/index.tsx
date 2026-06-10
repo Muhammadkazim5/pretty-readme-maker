@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState, type KeyboardEvent, type ReactNode } from "react";
+import { useEffect, useMemo, useState, useCallback, type KeyboardEvent, type ReactNode } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { marked } from "marked";
 import { toast } from "sonner";
 import {
@@ -127,12 +128,19 @@ function Index() {
   const [previewMode, setPreviewMode] = useState<"rendered" | "raw">("rendered");
   const [pkgJsonInput, setPkgJsonInput] = useState("");
   const [showPkgImport, setShowPkgImport] = useState(false);
+  const [featureKeys, setFeatureKeys] = useState<string[]>(() => defaultState.features.map(() => crypto.randomUUID()));
+  const [ackKeys, setAckKeys] = useState<string[]>(() => defaultState.acknowledgements.map(() => crypto.randomUUID()));
 
   // Load from localStorage
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) setState({ ...defaultState, ...JSON.parse(raw) });
+      if (raw) {
+        const parsed = { ...defaultState, ...JSON.parse(raw) } as ReadmeData;
+        setState(parsed);
+        setFeatureKeys(parsed.features.map(() => crypto.randomUUID()));
+        setAckKeys(parsed.acknowledgements.map(() => crypto.randomUUID()));
+      }
     } catch {}
   }, []);
 
@@ -352,26 +360,47 @@ function Index() {
             title="Features"
             badge={state.features.filter(Boolean).length ? <span className="ml-1 text-[10px] px-1.5 py-0.5 rounded-full bg-primary/20 text-primary-foreground border border-primary/40">{state.features.filter(Boolean).length}</span> : null}
           >
-            <div className="space-y-2">
-              {state.features.map((f, i) => (
-                <div key={i} className="flex gap-2">
-                  <input
-                    className={inputCls}
-                    placeholder={`Feature ${i + 1}`}
-                    value={f}
-                    onChange={(e) => update("features", state.features.map((x, j) => (j === i ? e.target.value : x)))}
-                  />
-                  <button
-                    onClick={() => update("features", state.features.length > 1 ? state.features.filter((_, j) => j !== i) : [""])}
-                    className="px-3 rounded-xl border border-border hover:border-destructive hover:text-destructive transition"
-                    aria-label="Remove feature"
+            <div className="space-y-3">
+              <AnimatePresence mode="popLayout">
+                {state.features.map((f, i) => (
+                  <motion.div
+                    key={featureKeys[i]}
+                    layout
+                    initial={{ opacity: 0, y: 12, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -12, scale: 0.96, transition: { duration: 0.15 } }}
+                    transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
+                    className="flex gap-2 p-2.5 rounded-xl bg-[color:var(--surface-elevated)] border border-border"
                   >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-              ))}
+                    <input
+                      className={inputCls}
+                      placeholder={`Feature ${i + 1}`}
+                      value={f}
+                      onChange={(e) => update("features", state.features.map((x, j) => (j === i ? e.target.value : x)))}
+                    />
+                    <button
+                      onClick={() => {
+                        if (state.features.length > 1) {
+                          update("features", state.features.filter((_, j) => j !== i));
+                          setFeatureKeys((k) => k.filter((_, j) => j !== i));
+                        } else {
+                          update("features", [""]);
+                          setFeatureKeys([crypto.randomUUID()]);
+                        }
+                      }}
+                      className="px-3 rounded-xl border border-border hover:border-destructive hover:text-destructive transition shrink-0"
+                      aria-label="Remove feature"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
               <button
-                onClick={() => update("features", [...state.features, ""])}
+                onClick={() => {
+                  update("features", [...state.features, ""]);
+                  setFeatureKeys((k) => [...k, crypto.randomUUID()]);
+                }}
                 className="inline-flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg border border-dashed border-border text-muted-foreground hover:border-primary hover:text-primary transition"
               >
                 <Plus className="w-4 h-4" /> Add feature
@@ -453,38 +482,48 @@ function Index() {
             defaultOpen={false}
             badge={state.roadmap.length ? <span className="ml-1 text-[10px] px-1.5 py-0.5 rounded-full bg-primary/20 text-primary-foreground border border-primary/40">{state.roadmap.length}</span> : null}
           >
-            <div className="space-y-2">
+            <div className="space-y-3">
               {state.roadmap.length === 0 && (
                 <div className="text-xs text-muted-foreground italic px-1 py-2">No roadmap items yet — share what's coming next.</div>
               )}
-              {state.roadmap.map((r, i) => (
-                <div key={i} className="flex gap-2 items-center">
-                  <input
-                    type="checkbox"
-                    checked={r.done}
-                    onChange={(e) =>
-                      update("roadmap", state.roadmap.map((x, j) => (j === i ? { ...x, done: e.target.checked } : x)))
-                    }
-                    className="accent-[color:var(--primary)] w-4 h-4"
-                  />
-                  <input
-                    className={inputCls}
-                    placeholder="Roadmap item"
-                    value={r.text}
-                    onChange={(e) =>
-                      update("roadmap", state.roadmap.map((x, j) => (j === i ? { ...x, text: e.target.value } : x)))
-                    }
-                  />
-                  <button
-                    onClick={() => update("roadmap", state.roadmap.filter((_, j) => j !== i))}
-                    className="px-3 rounded-xl border border-border hover:border-destructive hover:text-destructive transition"
+              <AnimatePresence mode="popLayout">
+                {state.roadmap.map((r, i) => (
+                  <motion.div
+                    key={r.id}
+                    layout
+                    initial={{ opacity: 0, y: 12, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -12, scale: 0.96, transition: { duration: 0.15 } }}
+                    transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
+                    className="flex gap-2 items-center p-2.5 rounded-xl bg-[color:var(--surface-elevated)] border border-border"
                   >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-              ))}
+                    <input
+                      type="checkbox"
+                      checked={r.done}
+                      onChange={(e) =>
+                        update("roadmap", state.roadmap.map((x, j) => (j === i ? { ...x, done: e.target.checked } : x)))
+                      }
+                      className="accent-[color:var(--primary)] w-4 h-4 shrink-0"
+                    />
+                    <input
+                      className={inputCls}
+                      placeholder="Roadmap item"
+                      value={r.text}
+                      onChange={(e) =>
+                        update("roadmap", state.roadmap.map((x, j) => (j === i ? { ...x, text: e.target.value } : x)))
+                      }
+                    />
+                    <button
+                      onClick={() => update("roadmap", state.roadmap.filter((_, j) => j !== i))}
+                      className="px-3 rounded-xl border border-border hover:border-destructive hover:text-destructive transition shrink-0"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
               <button
-                onClick={() => update("roadmap", [...state.roadmap, { text: "", done: false } as RoadmapItem])}
+                onClick={() => update("roadmap", [...state.roadmap, { id: crypto.randomUUID(), text: "", done: false }])}
                 className="inline-flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg border border-dashed border-border text-muted-foreground hover:border-primary hover:text-primary transition"
               >
                 <Plus className="w-4 h-4" /> Add roadmap item
@@ -502,36 +541,46 @@ function Index() {
               {state.faq.length === 0 && (
                 <div className="text-xs text-muted-foreground italic px-1 py-2">Answer common questions to save your users time.</div>
               )}
-              {state.faq.map((f, i) => (
-                <div key={i} className="space-y-2 p-3 rounded-xl bg-[color:var(--surface-elevated)] border border-border">
-                  <div className="flex gap-2">
-                    <input
-                      className={inputCls}
-                      placeholder="Question"
-                      value={f.q}
+              <AnimatePresence mode="popLayout">
+                {state.faq.map((f, i) => (
+                  <motion.div
+                    key={f.id}
+                    layout
+                    initial={{ opacity: 0, y: 12, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -12, scale: 0.96, transition: { duration: 0.15 } }}
+                    transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
+                    className="space-y-2.5 p-3 rounded-xl bg-[color:var(--surface-elevated)] border border-border"
+                  >
+                    <div className="flex gap-2">
+                      <input
+                        className={inputCls}
+                        placeholder="Question"
+                        value={f.q}
+                        onChange={(e) =>
+                          update("faq", state.faq.map((x, j) => (j === i ? { ...x, q: e.target.value } : x)))
+                        }
+                      />
+                      <button
+                        onClick={() => update("faq", state.faq.filter((_, j) => j !== i))}
+                        className="px-3 rounded-xl border border-border hover:border-destructive hover:text-destructive transition shrink-0"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <textarea
+                      className={inputCls + " min-h-16 resize-y"}
+                      placeholder="Answer"
+                      value={f.a}
                       onChange={(e) =>
-                        update("faq", state.faq.map((x, j) => (j === i ? { ...x, q: e.target.value } : x)))
+                        update("faq", state.faq.map((x, j) => (j === i ? { ...x, a: e.target.value } : x)))
                       }
                     />
-                    <button
-                      onClick={() => update("faq", state.faq.filter((_, j) => j !== i))}
-                      className="px-3 rounded-xl border border-border hover:border-destructive hover:text-destructive transition"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-                  <textarea
-                    className={inputCls + " min-h-16 resize-y"}
-                    placeholder="Answer"
-                    value={f.a}
-                    onChange={(e) =>
-                      update("faq", state.faq.map((x, j) => (j === i ? { ...x, a: e.target.value } : x)))
-                    }
-                  />
-                </div>
-              ))}
+                  </motion.div>
+                ))}
+              </AnimatePresence>
               <button
-                onClick={() => update("faq", [...state.faq, { q: "", a: "" } as FaqItem])}
+                onClick={() => update("faq", [...state.faq, { id: crypto.randomUUID(), q: "", a: "" }])}
                 className="inline-flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg border border-dashed border-border text-muted-foreground hover:border-primary hover:text-primary transition"
               >
                 <Plus className="w-4 h-4" /> Add Q&A
@@ -545,30 +594,51 @@ function Index() {
             defaultOpen={false}
             badge={state.acknowledgements.length ? <span className="ml-1 text-[10px] px-1.5 py-0.5 rounded-full bg-primary/20 text-primary-foreground border border-primary/40">{state.acknowledgements.length}</span> : null}
           >
-            <div className="space-y-2">
+            <div className="space-y-3">
               {state.acknowledgements.length === 0 && (
                 <div className="text-xs text-muted-foreground italic px-1 py-2">Credit people, libraries, or inspirations.</div>
               )}
-              {state.acknowledgements.map((a, i) => (
-                <div key={i} className="flex gap-2">
-                  <input
-                    className={inputCls}
-                    placeholder="Person, library, or inspiration"
-                    value={a}
-                    onChange={(e) =>
-                      update("acknowledgements", state.acknowledgements.map((x, j) => (j === i ? e.target.value : x)))
-                    }
-                  />
-                  <button
-                    onClick={() => update("acknowledgements", state.acknowledgements.filter((_, j) => j !== i))}
-                    className="px-3 rounded-xl border border-border hover:border-destructive hover:text-destructive transition"
+              <AnimatePresence mode="popLayout">
+                {state.acknowledgements.map((a, i) => (
+                  <motion.div
+                    key={ackKeys[i]}
+                    layout
+                    initial={{ opacity: 0, y: 12, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -12, scale: 0.96, transition: { duration: 0.15 } }}
+                    transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
+                    className="flex gap-2 p-2.5 rounded-xl bg-[color:var(--surface-elevated)] border border-border"
                   >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-              ))}
+                    <input
+                      className={inputCls}
+                      placeholder="Person, library, or inspiration"
+                      value={a}
+                      onChange={(e) =>
+                        update("acknowledgements", state.acknowledgements.map((x, j) => (j === i ? e.target.value : x)))
+                      }
+                    />
+                    <button
+                      onClick={() => {
+                        if (state.acknowledgements.length > 1) {
+                          update("acknowledgements", state.acknowledgements.filter((_, j) => j !== i));
+                          setAckKeys((k) => k.filter((_, j) => j !== i));
+                        } else {
+                          update("acknowledgements", [""]);
+                          setAckKeys([crypto.randomUUID()]);
+                        }
+                      }}
+                      className="px-3 rounded-xl border border-border hover:border-destructive hover:text-destructive transition shrink-0"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
               <button
-                onClick={() => update("acknowledgements", [...state.acknowledgements, ""])}
+                onClick={() => {
+                  update("acknowledgements", [...state.acknowledgements, ""]);
+                  setAckKeys((k) => [...k, crypto.randomUUID()]);
+                }}
                 className="inline-flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg border border-dashed border-border text-muted-foreground hover:border-primary hover:text-primary transition"
               >
                 <Plus className="w-4 h-4" /> Add acknowledgement
