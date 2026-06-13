@@ -342,6 +342,9 @@ function Index() {
               </div>
             </div>
           </Section>
+            </TabsContent>
+
+            <TabsContent value="content" className="space-y-6 mt-6">
 
           <Section
             icon={Tag}
