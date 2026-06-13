@@ -435,6 +435,9 @@ function Index() {
               </div>
             </div>
           </Section>
+            </TabsContent>
+
+            <TabsContent value="options" className="space-y-6 mt-6">
 
           <Section icon={Scale} title="Options & License">
             <div className="space-y-4">
