@@ -10,6 +10,8 @@ import {
   Map as MapIcon, HelpCircle, ThumbsUp, ChevronDown, Eye, Code2
 } from "lucide-react";
 import { Toaster } from "@/components/ui/sonner";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { buildMarkdown, TEMPLATES, type ReadmeData, type CustomBadge, type RoadmapItem, type FaqItem } from "@/lib/readme";
 
 export const Route = createFileRoute("/")({
