@@ -717,10 +717,12 @@ function Index() {
               </button>
             </div>
           </Section>
+            </TabsContent>
+          </Tabs>
         </section>
 
-        {/* RIGHT: PREVIEW */}
-        <section className="lg:sticky lg:top-6 lg:self-start lg:max-h-[calc(100vh-3rem)]">
+        {/* RIGHT: PREVIEW (desktop) */}
+        <section className="hidden lg:block lg:sticky lg:top-6 lg:self-start lg:max-h-[calc(100vh-3rem)]">
           <div className="rounded-2xl bg-card border border-border overflow-hidden flex flex-col lg:max-h-[calc(100vh-3rem)]">
             <div className="flex items-center justify-between gap-3 px-5 py-3 border-b border-border bg-[color:var(--surface-elevated)] sticky top-0 z-10 flex-wrap">
               <div className="flex items-center gap-3">
