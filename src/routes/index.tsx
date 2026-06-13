@@ -10,6 +10,8 @@ import {
   Map as MapIcon, HelpCircle, ThumbsUp, ChevronDown, Eye, Code2
 } from "lucide-react";
 import { Toaster } from "@/components/ui/sonner";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { buildMarkdown, TEMPLATES, type ReadmeData, type CustomBadge, type RoadmapItem, type FaqItem } from "@/lib/readme";
 
 export const Route = createFileRoute("/")({
@@ -259,7 +261,17 @@ function Index() {
 
       <main className="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* LEFT: FORM */}
-        <section className="space-y-6">
+        <section className="space-y-6 pb-24 lg:pb-0">
+          <Tabs defaultValue="setup" className="w-full">
+            <TabsList className="grid w-full grid-cols-5 h-auto p-1 bg-card border border-border">
+              <TabsTrigger value="setup" className="text-xs sm:text-sm py-2">Setup</TabsTrigger>
+              <TabsTrigger value="content" className="text-xs sm:text-sm py-2">Content</TabsTrigger>
+              <TabsTrigger value="options" className="text-xs sm:text-sm py-2">Options</TabsTrigger>
+              <TabsTrigger value="extras" className="text-xs sm:text-sm py-2">Extras</TabsTrigger>
+              <TabsTrigger value="badges" className="text-xs sm:text-sm py-2">Badges</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="setup" className="space-y-6 mt-6">
           {/* Templates */}
           <Section icon={Layers} title="Templates">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -330,6 +342,9 @@ function Index() {
               </div>
             </div>
           </Section>
+            </TabsContent>
+
+            <TabsContent value="content" className="space-y-6 mt-6">
 
           <Section
             icon={Tag}
@@ -420,6 +435,9 @@ function Index() {
               </div>
             </div>
           </Section>
+            </TabsContent>
+
+            <TabsContent value="options" className="space-y-6 mt-6">
 
           <Section icon={Scale} title="Options & License">
             <div className="space-y-4">
@@ -473,6 +491,9 @@ function Index() {
               />
             </div>
           </Section>
+            </TabsContent>
+
+            <TabsContent value="extras" className="space-y-6 mt-6">
 
 
 
@@ -645,6 +666,9 @@ function Index() {
               </button>
             </div>
           </Section>
+            </TabsContent>
+
+            <TabsContent value="badges" className="space-y-6 mt-6">
 
           <Section icon={Award} title="Badges" defaultOpen={false}>
             <div className="grid grid-cols-2 gap-2">
@@ -693,10 +717,12 @@ function Index() {
               </button>
             </div>
           </Section>
+            </TabsContent>
+          </Tabs>
         </section>
 
-        {/* RIGHT: PREVIEW */}
-        <section className="lg:sticky lg:top-6 lg:self-start lg:max-h-[calc(100vh-3rem)]">
+        {/* RIGHT: PREVIEW (desktop) */}
+        <section className="hidden lg:block lg:sticky lg:top-6 lg:self-start lg:max-h-[calc(100vh-3rem)]">
           <div className="rounded-2xl bg-card border border-border overflow-hidden flex flex-col lg:max-h-[calc(100vh-3rem)]">
             <div className="flex items-center justify-between gap-3 px-5 py-3 border-b border-border bg-[color:var(--surface-elevated)] sticky top-0 z-10 flex-wrap">
               <div className="flex items-center gap-3">
@@ -775,6 +801,53 @@ function Index() {
           </div>
         </section>
       </main>
+
+      {/* MOBILE: floating preview button + drawer */}
+      <Sheet>
+        <SheetTrigger asChild>
+          <button
+            className="lg:hidden fixed bottom-5 right-5 z-40 inline-flex items-center gap-2 px-5 py-3 rounded-full bg-gradient-to-r from-primary to-[color:var(--accent-glow)] text-primary-foreground shadow-xl shadow-primary/40 font-semibold text-sm active:scale-95 transition"
+            aria-label="Open preview"
+          >
+            <Eye className="w-4 h-4" />
+            Preview
+          </button>
+        </SheetTrigger>
+        <SheetContent side="bottom" className="h-[85vh] p-0 bg-card border-border">
+          <div className="flex items-center justify-between gap-3 px-5 py-3 border-b border-border bg-[color:var(--surface-elevated)]">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Preview</span>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={copy}
+                disabled={!md}
+                className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg bg-[color:var(--surface)] border border-border disabled:opacity-40"
+              >
+                <Copy className="w-3.5 h-3.5" /> Copy
+              </button>
+              <button
+                onClick={download}
+                disabled={!md}
+                className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg bg-gradient-to-r from-primary to-[color:var(--accent-glow)] text-primary-foreground disabled:opacity-40"
+              >
+                <Download className="w-3.5 h-3.5" /> Download
+              </button>
+            </div>
+          </div>
+          <div className="overflow-auto scrollbar-thin p-5 h-[calc(85vh-3.5rem)]">
+            {md ? (
+              <article className="prose-readme" dangerouslySetInnerHTML={{ __html: html }} />
+            ) : (
+              <div className="h-full grid place-items-center text-center text-muted-foreground text-sm">
+                Fill out the form to see your README
+              </div>
+            )}
+          </div>
+        </SheetContent>
+      </Sheet>
+
 
       <style>{`
         .prose-readme { color: var(--foreground); line-height: 1.7; font-size: 14px; }
