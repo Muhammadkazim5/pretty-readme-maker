@@ -666,6 +666,9 @@ function Index() {
               </button>
             </div>
           </Section>
+            </TabsContent>
+
+            <TabsContent value="badges" className="space-y-6 mt-6">
 
           <Section icon={Award} title="Badges" defaultOpen={false}>
             <div className="grid grid-cols-2 gap-2">
