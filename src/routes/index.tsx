@@ -491,6 +491,9 @@ function Index() {
               />
             </div>
           </Section>
+            </TabsContent>
+
+            <TabsContent value="extras" className="space-y-6 mt-6">
 
 
 
