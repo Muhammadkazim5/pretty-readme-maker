@@ -261,7 +261,16 @@ function Index() {
 
       <main className="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* LEFT: FORM */}
-        <section className="space-y-6">
+        <section className="space-y-6 pb-24 lg:pb-0">
+          <Tabs defaultValue="basics" className="w-full">
+            <TabsList className="grid w-full grid-cols-4 h-auto p-1 bg-card border border-border">
+              <TabsTrigger value="basics" className="text-xs sm:text-sm py-2">Basics</TabsTrigger>
+              <TabsTrigger value="content" className="text-xs sm:text-sm py-2">Content</TabsTrigger>
+              <TabsTrigger value="extras" className="text-xs sm:text-sm py-2">Extras</TabsTrigger>
+              <TabsTrigger value="badges" className="text-xs sm:text-sm py-2">Badges</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="basics" className="space-y-6 mt-6">
           {/* Templates */}
           <Section icon={Layers} title="Templates">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
